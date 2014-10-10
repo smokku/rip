@@ -7,27 +7,48 @@ import (
 	"net/http/httptest"
 )
 
-type mainResource struct {
+type fooResource struct {
 	ResourceBase
 }
-type mainSubResource struct {
+type fooSubResource struct {
 	ResourceBase
 }
-type subResource struct {
+type bazResource struct {
 	ResourceBase
 }
 
 func TestMain(t *testing.T) {
-	user := AddResource("foos", new(mainResource))
-	user.AddResource("bars", new(mainSubResource))
-	user.AddResource("bazes", new(subResource))
+	root := New().
+		AddResource("foos", new(fooResource)).
+		AddResource("bazes", new(bazResource))
+	root.GetResource("foos").
+		AddResource("bars", new(fooSubResource))
 
-	req, err := http.NewRequest("GET", "http://example.com/foos", nil)
-	if err != nil {
-		t.Fatal(err)
+	type MainRequestTest struct {
+		method  string
+		url     string
+		success bool
+	}
+	var mainRequestTests = []MainRequestTest{
+		{GET, "/foos", true},
+		{GET, "/foos/123", true},
+		{POST, "/foos", true},
+		{GET, "/notthere", false},
+		{GET, "/foos/none", false},
+		{DELETE, "/foos/123", true},
+		{GET, "/foos/bars", true},
+		{GET, "/foos/123/bazes", true},
+		{POST, "/foos/123/bazes", true},
 	}
 
-	w := httptest.NewRecorder()
-	user.ServeHTTP(w, req)
-	t.Logf("%d - %s", w.Code, w.Body.String())
+	for _, d := range mainRequestTests {
+		req, err := http.NewRequest(d.method, d.url, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		w := httptest.NewRecorder()
+		root.ServeHTTP(w, req)
+		t.Logf("%d - %s", w.Code, w.Body.String())
+	}
 }
