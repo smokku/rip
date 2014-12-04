@@ -2,43 +2,45 @@ package rip
 
 import (
 	"net/http"
-	"strings"
+	//"strings"
 )
 
-type Resource interface {
-	AddResource(string, Resource) Resource
-	GetResource(string) Resource
+/*
+type Resource struct {
+	Add(string, interface{}) Resource
+	Get(string) Resource
 	ServeHTTP(http.ResponseWriter, *http.Request)
 }
+*/
 
-type ResourceBase struct {
-	resources map[string]Resource
+type Handler struct {
+	*http.ServeMux
+	resources map[string]interface{}
 }
 
-func New() Resource {
-	return new(ResourceBase)
+func New() *Handler {
+	return &Handler{http.NewServeMux(), make(map[string]interface{})}
 }
 
-func (r *ResourceBase) AddResource(path string, res Resource) Resource {
-	if r.resources == nil {
-		r.resources = make(map[string]Resource)
-	}
-	r.resources[path] = res
-	return r
+func (h *Handler) Add(name string, resource interface{}) *Handler {
+	h.HandleFunc("/"+name+"/", requestHandler(resource))
+	return h
 }
 
-func (r *ResourceBase) GetResource(path string) Resource {
-	return r.resources[path]
+/*
+func (r *Handler) Get(name string) *Handler {
+	return r.resources[name]
 }
 
-func (r *ResourceBase) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	path := req.URL.Path[1:]
+func (r *Handler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	name := req.URL.Path[1:]
 	for needle, res := range r.resources {
-		if needle == path || strings.HasPrefix(path, needle+"/") {
-			if len(path) > len(needle) {
-				req.URL.Path = path[len(needle):]
+		if needle == name || strings.HasPrefix(name, needle+"/") {
+			if len(name) > len(needle) {
+				req.URL.Path = name[len(needle):]
 				res.ServeHTTP(resp, req)
 			}
 		}
 	}
 }
+*/

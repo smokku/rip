@@ -8,21 +8,18 @@ import (
 )
 
 type fooResource struct {
-	ResourceBase
 }
 type fooSubResource struct {
-	ResourceBase
 }
 type bazResource struct {
-	ResourceBase
 }
 
 func TestMain(t *testing.T) {
 	root := New().
-		AddResource("foos", new(fooResource)).
-		AddResource("bazes", new(bazResource))
-	root.GetResource("foos").
-		AddResource("bars", new(fooSubResource))
+		Add("foos", fooResource{}).
+		Add("bazes", bazResource{})
+	//root.Get("foos").
+	//	Add("bars", fooSubResource{})
 
 	type MainRequestTest struct {
 		method  string
@@ -47,8 +44,8 @@ func TestMain(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		w := httptest.NewRecorder()
-		root.ServeHTTP(w, req)
-		t.Logf("%d - %s", w.Code, w.Body.String())
+		rsp := httptest.NewRecorder()
+		root.ServeHTTP(rsp, req)
+		t.Logf("%d - %s", rsp.Code, rsp.Body.String())
 	}
 }
