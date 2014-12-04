@@ -56,3 +56,7 @@ func main() {
 
     $ curl -i localhost:8000/api/random/100
 
+## Lecture
+
+- [Using HTTP Methods for RESTful Services](http://www.restapitutorial.com/lessons/httpmethods.html)
+
