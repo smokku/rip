@@ -121,6 +121,8 @@ func requestHandler(resource interface{}) http.HandlerFunc {
 			}
 
 			switch v := data.(type) {
+			case nil:
+				// pass
 			case string:
 				content = []byte(v)
 			case int, int8, int16, int32, int64:
