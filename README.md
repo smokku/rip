@@ -2,9 +2,19 @@ REST.Is.Popular.
 ================
 [![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/smokku/rip?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-RESTful microframework for Go
+*RESTful microframework for Go*
+
+There are many REST frameworks for Go Lang (and even more that claim they are), so why write another one?
+
+I needed a skeleton code that simplifies parsing JSON-REST requests and servicn JSON responses. Simple one, that allows me to throw a few lines of code and get some results, but all I got from _The Web_ were behemots requiring me to write gazilions of API descriptors and covering everything including kitchen sink.
+
+There was one candy though. A [blog article](http://dougblack.io/words/a-restful-micro-framework-in-go.html) that discussed simple matching of HTTP resource methods to Resource object methods. I tried it and it was a pleasure. But after some use I realized its defeciencies and how I could improve on this idea. For once, my API is JSON focused, so auto unmarshalling/marshaling is a must. Secondly, method signatures were a bit cumbersome. Thus RIP was born.
+
 
 ## Example
+
+This example shows [Goji](http://goji.io/) integration, but it is not a must. You can use anything net/http compliant.
+
 ```go
 import (
 	"github.com/smokku/rip"
