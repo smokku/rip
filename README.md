@@ -56,6 +56,35 @@ func main() {
 
     $ curl -i localhost:8000/api/random/100
 
+## Cross-Origin Resource Sharing
+
+Once you put your API on a separate domain than your main site (or enable it for public use)
+you will want to setup CORS handling for API requests. Thanks to rs/cors library it is
+mindblowingly simple:
+
+```go
+import (
+	"github.com/smokku/rip"
+	//[...]
+	"github.com/rs/cors"
+)
+
+func main() {
+	//[...]
+	api1 := web.New()
+	//[...]
+	api1.Use(middleware.SubRouter)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8080"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATH", "DELETE"},
+		AllowedHeaders:   []string{"accept", "content-type"},
+		AllowCredentials: true,
+	})
+	api1.Use(c.Handler)
+	//[...]
+}
+```
+
 ## Lecture
 
 - [Using HTTP Methods for RESTful Services](http://www.restapitutorial.com/lessons/httpmethods.html)
